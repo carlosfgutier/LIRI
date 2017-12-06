@@ -1,4 +1,5 @@
 var requestType = process.argv[2]
+var randomType = ['my-tweets', 'spotify-this-song', 'movie-this']
 
 
 if (requestType == 'my-tweets') {
@@ -61,14 +62,20 @@ if (requestType == 'movie-this') {
 	  if (!error && response.statusCode === 200) {
 	    console.log("Title: " + JSON.parse(body).Title);
 	    console.log("Release Year: " + JSON.parse(body).Year);
-		console.log("IMDB Rating: " + JSON.parse(body).Ratings[0]);
-		console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1]]);
+		console.log("IMDB Rating: " + JSON.parse(body).Ratings[0].Value);
+		console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
 		console.log("Production Country: " + JSON.parse(body).Country);
 		console.log("Language: " + JSON.parse(body).Language);
 		console.log("Plot: " + JSON.parse(body).Plot);
 		console.log("Cast: " + JSON.parse(body).Actors);
 	  }
 	});
+}
+
+if (requestType == 'do-what-it-says') {
+
+	var pickOne = Math.floor(Math.random() * requestType.length);
+
 }
 
 
