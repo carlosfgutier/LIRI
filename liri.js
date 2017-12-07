@@ -2,10 +2,10 @@
 //--------------------------------------------------------//
 var requestType = process.argv[2];
 var thing = process.argv[3];
-var randomType = ['my-tweets', 'spotify-this-song', 'movie-this']
+var thingTitle = process.argv.slice(3);
+var randomType = ['my-tweets', 'spotify-this-song', 'movie-this'];
 
 // var twitterKeys = require('./keys.js');
-// var spotifyKeys = require('./keys.js');
 
 var Twitter = require('twitter');
 var spotify = require('node-spotify-api');
@@ -66,16 +66,12 @@ function findTweets() {
 };
 
 function spotifyThis() {
-	var nodeArgs = process.argv;
-	var songName = "";
 
-	for (var i = 3; i < nodeArgs.length; i++) {
-		if (i >= 3 && i < nodeArgs.length) {
-		    songName = songName + "+" + nodeArgs[i];
-		}
-	} 
+	if (thingTitle.length == 0) {
+		thingTitle = "I want it that way";
+	}
 
-	spotify.search({ type: 'track', query: songName }, function(err, data) {
+	spotify.search({ type: 'track', query: thingTitle }, function(err, data) {
   		if (err) {
     		return console.log('Error occurred: ' + err);
   		}
@@ -87,19 +83,13 @@ function spotifyThis() {
 };
 
 function movieThis() {
-	var nodeArgs = process.argv;
-	var movieName = "";
 
-	for (var i = 3; i < nodeArgs.length; i++) {
-	  	if (i > 3 && i < nodeArgs.length) {
-	    	movieName = movieName + "+" + nodeArgs[i];
-	  	} 
-	  	else {
-	    	movieName += nodeArgs[i];
-	  	}
+
+	if (thingTitle.length == 0) {
+		thingTitle = "The Lion King";
 	}
 
-	var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+	var queryUrl = "http://www.omdbapi.com/?t=" + thingTitle + "&y=&plot=short&apikey=trilogy";
 
 	request(queryUrl, function(error, response, body) {
 	  if (!error && response.statusCode === 200) {
