@@ -1,48 +1,54 @@
-var requestType = process.argv[2]
+var requestType = process.argv[2];
+var thing = process.argv[3];
 var randomType = ['my-tweets', 'spotify-this-song', 'movie-this']
 
+var twitterKeys = require('./keys.js');
+var spotifyKeys = require('./keys.js')
+
+var Twitter = require('twitter');
+var spotify = require('node-spotify-api');
+var request = require('request');
 
 if (requestType == 'my-tweets') {
 
-	var Twitter = require('twitter');
-
 	var client = new Twitter({
-	  consumer_key: '3fFY2k8QOLT22OEK8MjnNL3qe',
-	  consumer_secret: 'tq5zIUiXidazeWvRKMe9cJaNOCxOVDJEFvbyVSfibrtxUnCOW',
-	  access_token_key: '938192892488814592-yQD0iKcvWlaD0tXy6LJHSlVuAWwJXAa',
-	  access_token_secret: '0I47sDdgB4ZhZW0Z4ZzNrl7gEvU1VDzs3Syr6j05eC62C'
+	  consumer_key: 'twitterKeys.consumer_key',
+	  consumer_secret: 'twitterKeys.consumer_secret',
+	  access_token_key: 'twitterKeys.access_token_key',
+	  access_token_secret: 'twitterKeys.access_token_secret',
+	});	
+
+	var params = {screen_name: 'cccarfer'};
+
+	client.get('statuses/user_timeline', params, function(error, tweets, response) {
+	 console.log(error)
+	  if (!error) {
+	    console.log(tweets);
+	  }
 	});
-
-	console.log(client);
-
-	// client.get(path, params, callback);
-
-	// client.get('search/tweets', {q: 'node.js'}, function(error, tweets, response) {
-	//    console.log(tweets);
-	// });
 }
 
 if (requestType == 'spotify-this-song') {
-
-	var spotify = require('node-spotify-api');
 
 	var spotify = new spotify({
 	  id: 'bf069d052e724512a043c4ab3da94b27',
 	  secret: '495d0b3e02f94ef39295f7b0f6894fb9',
 	});
 
-
-	spotify.search({ type: 'track', query: 'lorde' }, function(err, data) {
+	spotify.search({ type: 'track', query: thing }, function(err, data) {
   		if (err) {
     		return console.log('Error occurred: ' + err);
   		}
-		console.log(JSON.stringify(data, null, 2)); 
+
+  		debugger;
+		console.log("Artist: " + JSON.stringify(data.tracks.items[0].album.artists[0].name, null, 2));
+		console.log("Song: " + JSON.stringify(data.tracks.items[0].name, null, 2));
+		console.log("Preview: " + JSON.stringify(data.tracks.items[0].preview_url, null, 2));
+		console.log("Album: " + JSON.stringify(data.tracks.items[0].album.name, null, 2)); 
 	});
 }
 
 if (requestType == 'movie-this') {
-
-	var request = require('request');
 
 	var nodeArgs = process.argv;
 	var movieName = "";
@@ -75,7 +81,6 @@ if (requestType == 'movie-this') {
 if (requestType == 'do-what-it-says') {
 
 	var pickOne = Math.floor(Math.random() * requestType.length);
-
 }
 
 
