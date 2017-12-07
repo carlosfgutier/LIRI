@@ -1,65 +1,102 @@
+//GLOBAL VARIABLES
+//--------------------------------------------------------//
 var requestType = process.argv[2];
 var thing = process.argv[3];
 var randomType = ['my-tweets', 'spotify-this-song', 'movie-this']
 
-var twitterKeys = require('./keys.js');
-var spotifyKeys = require('./keys.js')
+// var twitterKeys = require('./keys.js');
+// var spotifyKeys = require('./keys.js');
 
 var Twitter = require('twitter');
 var spotify = require('node-spotify-api');
 var request = require('request');
 
-if (requestType == 'my-tweets') {
-
-	var client = new Twitter({
-	  consumer_key: 'twitterKeys.consumer_key',
-	  consumer_secret: 'twitterKeys.consumer_secret',
-	  access_token_key: 'twitterKeys.access_token_key',
-	  access_token_secret: 'twitterKeys.access_token_secret',
-	});	
-
-	var params = {screen_name: 'cccarfer'};
-
-	client.get('statuses/user_timeline', params, function(error, tweets, response) {
-	 console.log(error)
-	  if (!error) {
-	    console.log(tweets);
-	  }
+var spotify = new spotify({
+		id: 'bf069d052e724512a043c4ab3da94b27',
+		secret: '495d0b3e02f94ef39295f7b0f6894fb9',
 	});
+
+//REQUESTS
+//--------------------------------------------------------//
+if (requestType == 'my-tweets') {
+	findTweets();
 }
 
 if (requestType == 'spotify-this-song') {
+	spotifyThis();
+}
 
-	var spotify = new spotify({
-	  id: 'bf069d052e724512a043c4ab3da94b27',
-	  secret: '495d0b3e02f94ef39295f7b0f6894fb9',
+if (requestType == 'movie-this') {
+	movieThis();
+}
+
+if (requestType == 'do-what-it-says') {
+	var pickOne = Math.floor(Math.random() * (2 - 0 +1));
+	var randomRequest = randomType[pickOne];
+	
+	if (randomRequest == 'my-tweets') {
+		findTweets();
+	} else if (randomRequest == 'spotify-this-song') {
+		spotifyThis();
+	} else if (randomRequest == 'movie-this') {
+		movieThis();
+	}
+}
+
+//FUNCTION
+//--------------------------------------------------------//
+function findTweets() {
+	var client = new Twitter({
+		consumer_key: '3fFY2k8QOLT22OEK8MjnNL3qe',
+  		consumer_secret: 'tq5zIUiXidazeWvRKMe9cJaNOCxOVDJEFvbyVSfibrtxUnCOWk',
+  		access_token_key: '938192892488814592-yQD0iKcvWlaD0tXy6LJHSlVuAWwJXAa',
+  		access_token_secret: '0I47sDdgB4ZhZW0Z4ZzNrl7gEvU1VDzs3Syr6j05eC62C',
+	});	
+
+	var params = {screen_name: thing};
+
+	client.get('statuses/user_timeline', params, function(error, tweets, response) {
+	  if (!error) {
+
+	  	for (var i = 0; i < tweets.length; i++) {	  	
+	  		console.log("Tweet" + [i+1] + ": " + tweets[i].text + "\n");
+	  	}
+	  }
 	});
+};
 
-	spotify.search({ type: 'track', query: thing }, function(err, data) {
+function spotifyThis() {
+	var nodeArgs = process.argv;
+	var songName = "";
+
+	for (var i = 3; i < nodeArgs.length; i++) {
+		if (i >= 3 && i < nodeArgs.length) {
+		    songName = songName + "+" + nodeArgs[i];
+		}
+	} 
+
+	spotify.search({ type: 'track', query: songName }, function(err, data) {
   		if (err) {
     		return console.log('Error occurred: ' + err);
   		}
-
-  		debugger;
 		console.log("Artist: " + JSON.stringify(data.tracks.items[0].album.artists[0].name, null, 2));
 		console.log("Song: " + JSON.stringify(data.tracks.items[0].name, null, 2));
 		console.log("Preview: " + JSON.stringify(data.tracks.items[0].preview_url, null, 2));
 		console.log("Album: " + JSON.stringify(data.tracks.items[0].album.name, null, 2)); 
 	});
-}
+};
 
-if (requestType == 'movie-this') {
-
+function movieThis() {
 	var nodeArgs = process.argv;
 	var movieName = "";
 
 	for (var i = 3; i < nodeArgs.length; i++) {
-	  if (i > 3 && i < nodeArgs.length) {
-	    movieName = movieName + "+" + nodeArgs[i];
-	  } 
-	  else {
-	    movieName += nodeArgs[i];
-	  }
+	  	if (i > 3 && i < nodeArgs.length) {
+	    	movieName = movieName + "+" + nodeArgs[i];
+	  	} 
+	  	else {
+	    	movieName += nodeArgs[i];
+	  	}
 	}
 
 	var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
@@ -76,12 +113,5 @@ if (requestType == 'movie-this') {
 		console.log("Cast: " + JSON.parse(body).Actors);
 	  }
 	});
-}
-
-if (requestType == 'do-what-it-says') {
-
-	var pickOne = Math.floor(Math.random() * requestType.length);
-}
-
-
+};
 
